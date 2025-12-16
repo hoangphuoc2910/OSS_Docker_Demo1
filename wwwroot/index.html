@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Project 2 - Todo List Monolith</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+            background: #f0f2f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>📝 Danh sách công việc</h2>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="taskInput" placeholder="Nhập công việc mới...">
+            <button onclick="addTodo()">Thêm</button>
+        </div>
+        <ul id="taskList">Loading...</ul>
+    </div>
+
+    <script>
+        // Gọi API (Chung host nên chỉ cần đường dẫn tương đối)
+        const API_URL = '/api/todos';
+
+        async function loadTodos() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                const list = document.getElementById('taskList');
+                list.innerHTML = '';
+                data.forEach(item => {
+                    list.innerHTML += `<li>${item.title} <span>${item.isCompleted ? '✅' : '⏳'}</span></li>`;
+                });
+            } catch (e) { alert("Lỗi tải: " + e); }
+        }
+
+        async function addTodo() {
+            const input = document.getElementById('taskInput');
+            if (!input.value) return;
+
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: input.value })
+            });
+            input.value = '';
+            loadTodos();
+        }
+
+        loadTodos(); // Chạy khi mở web
+    </script>
+</body>
+
+</html>
