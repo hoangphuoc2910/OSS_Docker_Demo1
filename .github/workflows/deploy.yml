@@ -1,30 +1,38 @@
-name: Deploy Project 2 (Todo List)
+name: Deploy TodoList Hybrid
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  deploy:
+  deploy-backend:
+    name: 🚀 Somee Backend
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      - uses: actions/checkout@v4
+      - name: Sync Backend
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          dotnet-version: 8.0.x # Sửa thành version bạn đang dùng (6.0, 7.0, hoặc 8.0)
+          server: ${{ secrets.SOMEE_FTP_SERVER }}
+          username: ${{ secrets.SOMEE_FTP_USER }}
+          password: ${{ secrets.SOMEE_FTP_PASS }}
+          # Đẩy toàn bộ source code trừ thư mục wwwroot
+          local-dir: ./
+          server-dir: /
+          exclude: |
+            **/wwwroot/**
 
-      - name: Publish
-        run: dotnet publish -c Release -o ./publish
-
-      - name: FTP Deploy
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+  deploy-frontend:
+    name: 🌐 InfinityFree Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync Frontend
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./publish/
-          # QUAN TRỌNG: Dựa vào ảnh của bạn, đường dẫn FTP có đuôi dài
-          # Hãy thêm dòng này để nó chui đúng vào thư mục web:
-          server-dir: ./www.dh52201267todolist.somee.com/
+          server: ${{ secrets.IF_HOST }}
+          username: ${{ secrets.IF_USER }}
+          password: ${{ secrets.IF_PASS }}
+          # Chỉ lấy nội dung TRONG thư mục wwwroot để đưa vào htdocs
+          local-dir: ./wwwroot/
+          server-dir: htdocs/
