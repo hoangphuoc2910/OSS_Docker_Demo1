@@ -1,0 +1,23 @@
+name: Deploy Frontend (InfinityFree)
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "wwwroot/**" # CHỈ chạy khi có sửa đổi trong thư mục wwwroot
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🚀 Sync to InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.IF_HOST }}
+          username: ${{ secrets.IF_USER }}
+          password: ${{ secrets.IF_PASS }}
+          local-dir: ./wwwroot/ # Lấy file từ wwwroot
+          server-dir: htdocs/ # Đưa vào htdocs
+          dangerous-clean-slate: false

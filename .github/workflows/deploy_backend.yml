@@ -1,0 +1,33 @@
+name: Deploy Backend (Somee)
+
+on:
+  push:
+    branches: ["main"]
+    paths-ignore:
+      - "wwwroot/**" # Sửa giao diện thì KHÔNG chạy cái này cho đỡ tốn thời gian
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Bước 1: Cài môi trường để Build
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      # Bước 2: Build ra file chạy (DLL)
+      - name: Publish .NET App
+        run: dotnet publish -c Release -o ./publish_output
+
+      # Bước 3: Đẩy lên Somee
+      - name: 🚀 Sync to Somee
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./publish_output/
+          server-dir: /
