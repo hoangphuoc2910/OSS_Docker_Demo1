@@ -26,9 +26,9 @@ jobs:
       - name: 🚀 Sync Backend to Somee
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.SOMEE_FTP_SERVER }}
-          username: ${{ secrets.SOMEE_FTP_USER }}
-          password: ${{ secrets.SOMEE_FTP_PASS }}
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
           local-dir: ./publish_output/ # Chỉ lấy file đã biên dịch
           server-dir: /
 
